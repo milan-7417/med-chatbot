@@ -1,9 +1,11 @@
 # Core LLM framework
 langchain>=0.1.16
 langchain-community>=0.0.36
+huggigface_hub
 
 # Vector database (Pinecone v3 – serverless)
 pinecone>=3.0.0
+langchain-pinecone=0.2.13
 
 # Embeddings
 sentence-transformers>=2.2.2
