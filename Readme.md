@@ -1,65 +1,61 @@
-# 🩺 Medical RAG Chatbot
+# 🩺 MedBot • Intelligent Medical AI Assistant
 
-An intelligent **Retrieval-Augmented Generation (RAG)** medical chatbot built with **Streamlit, LangChain, Pinecone, and Hugging Face Qwen2.5-3B-Instruct**.
+An ultra-fast, evidence-grounded **Retrieval-Augmented Generation (RAG)** medical AI assistant built with **Streamlit, LangChain, Pinecone, Groq (`openai/gpt-oss-120b`), and Sentence Transformers**.
 
-The chatbot retrieves relevant information from an indexed medical knowledge base using **semantic search** and generates answers using a locally running Hugging Face LLM.
+**MedBot** retrieves relevant medical excerpts from an indexed clinical knowledge base using **semantic search** and generates real-time, streamed answers with multi-turn conversation memory.
 
-> ⚠️ **Important:** The chatbot is designed to answer questions **strictly from the indexed medical documents**. If the required information is not available in the retrieved context, it responds that it does not know based on the provided documents.
+> ⚠️ **Important:** MedBot is designed to answer questions grounded in the indexed medical documents and conversational context. It is intended for educational and research purposes only and is not a substitute for professional medical advice.
 
 ---
 
 ## 🚀 Features
 
-* 🩺 **Medical Question Answering**
-* 📚 **Retrieval-Augmented Generation (RAG)**
-* 🔍 **Semantic Search with Pinecone**
-* 🧠 **Hugging Face Qwen2.5-3B-Instruct LLM**
-* 🤗 **Fully Local LLM Inference**
-* 💬 **Interactive Chat Interface**
-* 🎨 **Modern & Colorful Streamlit UI**
-* 📖 **Medical Knowledge Base Integration**
-* 🎚️ **Adjustable Top-K Document Retrieval**
-* 🧹 **Clear Conversation Functionality**
-* ⚡ **Cached Models and Resources**
-* ☁️ **Deployable Streamlit Application**
+* 🩺 **Accurate Medical Question Answering** grounded in clinical reference literature.
+* ⚡ **Ultra-Fast Groq Inference**: Powered by `openai/gpt-oss-120b` with real-time token streaming.
+* 💬 **Multi-Turn Chat History**: Retains dialogue context for seamless follow-up questions (e.g., *"What are its symptoms?"*, *"How is it treated?"*).
+* 🔍 **Source Transparency**: Collapsible citations drawer showing exact reference text chunks retrieved from Pinecone.
+* 📌 **Pinecone Vector Database**: High-performance serverless vector index with `sentence-transformers/all-MiniLM-L6-v2`.
+* 🎨 **Clinical Glassmorphic UI**: Sleek, modern interface with high-contrast medical theme and responsive layout.
+* 🎚️ **Interactive Controls**: Adjustable Top-K retrieval chunks and temperature sliders.
+* 📥 **Chat Export**: One-click Markdown conversation history export.
+* 🧹 **Clear Chat**: Instant session reset.
 
 ---
 
-## 🧠 How It Works
-
-The application follows a Retrieval-Augmented Generation pipeline:
+## 🧠 Architecture & RAG Pipeline
 
 ```text
-                 User Question
-                       │
-                       ▼
-              ┌─────────────────┐
-              │    Embedding    │
-              │  MiniLM Model   │
-              └────────┬────────┘
-                       │
-                       ▼
-                ┌─────────────┐
-                │   Pinecone  │
-                │ Vector Store│
-                └──────┬──────┘
-                       │
-                 Relevant Docs
-                       │
-                       ▼
-              ┌─────────────────┐
-              │  RAG Prompt     │
-              │ Context + Query │
-              └────────┬────────┘
-                       │
-                       ▼
-          ┌────────────────────────┐
-          │ Qwen2.5-3B-Instruct   │
-          │ Hugging Face LLM      │
-          └────────────┬───────────┘
-                       │
-                       ▼
-                 Final Answer
+               User Question + Chat History
+                            │
+                            ▼
+                 ┌────────────────────┐
+                 │     Embedding      │
+                 │   all-MiniLM-L6    │
+                 └──────────┬─────────┘
+                            │
+                            ▼
+                 ┌────────────────────┐
+                 │  Pinecone Vector   │
+                 │     Database       │
+                 └──────────┬─────────┘
+                            │
+                      Retrieved Docs
+                            │
+                            ▼
+                 ┌────────────────────┐
+                 │  Context-Aware     │
+                 │   RAG Prompt       │
+                 └──────────┬─────────┘
+                            │
+                            ▼
+                 ┌────────────────────┐
+                 │        Groq        │
+                 │ openai/gpt-oss-120b│
+                 └──────────┬─────────┘
+                            │
+                            ▼
+                   Live Streamed Answer
+                + Source Citations Drawer
 ```
 
 ---
@@ -77,125 +73,55 @@ The source PDF contains medical reference information covering topics from **A t
 
 The PDF content is processed, chunked, converted into embeddings, and indexed in **Pinecone** for semantic retrieval.
 
-### Data Processing Pipeline
-
-```text
-Gale Encyclopedia PDF
-          │
-          ▼
-     Text Extraction
-          │
-          ▼
-       Chunking
-          │
-          ▼
-  Sentence Transformer
-          │
-          ▼
-      Embeddings
-          │
-          ▼
-       Pinecone
-          │
-          ▼
-    Semantic Retrieval
-```
-
----
-
-## 🤖 LLM
-
-The chatbot uses:
-
-```text
-Qwen/Qwen2.5-3B-Instruct
-```
-
-The model is loaded directly from Hugging Face using the Transformers library.
-
-```python
-model_id = "Qwen/Qwen2.5-3B-Instruct"
-```
-
-No OpenAI, Groq, or other external LLM API is required.
-
----
-
-## 🔍 Retrieval System
-
-The chatbot uses **Pinecone** as its vector database.
-
-### Embedding Model
-
-```text
-sentence-transformers/all-MiniLM-L6-v2
-```
-
-The embedding model converts the user query into a vector representation.
-
-Pinecone then retrieves the most semantically relevant medical document chunks.
-
-The number of retrieved documents can be adjusted from the Streamlit sidebar using the **Top-K** slider.
-
 ---
 
 ## 🧱 Tech Stack
 
-| Technology               | Purpose                           |
-| ------------------------ | --------------------------------- |
-| 🐍 Python                | Core programming language         |
-| 🎨 Streamlit             | Web application & UI              |
-| 🦜 LangChain             | RAG pipeline orchestration        |
-| 📌 Pinecone              | Vector database & semantic search |
-| 🤗 Hugging Face          | LLM ecosystem                     |
-| 🧠 Qwen2.5-3B-Instruct   | Language model                    |
-| 🔤 Sentence Transformers | Text embeddings                   |
-| 🔥 PyTorch               | Model inference                   |
-| 🤖 Transformers          | Hugging Face model loading        |
+| Component | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Language** | 🐍 Python 3.10+ | Core application logic |
+| **Frontend UI** | 🎨 Streamlit | Interactive web interface |
+| **LLM Inference** | ⚡ Groq Cloud | Ultra-low latency `openai/gpt-oss-120b` |
+| **RAG Orchestration** | 🦜 LangChain / `langchain-groq` | Prompt composition & pipeline |
+| **Vector Database** | 📌 Pinecone | Serverless semantic search index |
+| **Embeddings** | 🔤 Sentence-Transformers | 384-dimensional dense text vectors |
 
 ---
 
 ## 📁 Project Structure
 
 ```text
-medical-rag-chatbot/
+med-chatbot/
 │
-├── app.py
-├── requirements.txt
-├── .env
-├── .gitignore
-└── README.md
+├── app.py              # Main Streamlit application with MedBot UI & Groq streaming
+├── requirements.txt    # Project dependencies
+├── .env                # API keys and environment variables
+├── .gitignore          # Git ignore rules
+└── Readme.md           # Project documentation
 ```
 
 ---
 
-## 📦 Installation
+## 📦 Installation & Setup
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/medical-rag-chatbot.git
+git clone https://github.com/milan-7417/med-chatbot.git
+cd med-chatbot
 ```
 
-```bash
-cd medical-rag-chatbot
-```
+### 2. Create and activate a virtual environment
 
-### 2. Create a virtual environment
-
-```bash
+**Windows (PowerShell):**
+```powershell
 python -m venv venv
+.\venv\Scripts\Activate.ps1
 ```
 
-Activate it on Windows:
-
+**macOS / Linux:**
 ```bash
-venv\Scripts\activate
-```
-
-Linux/macOS:
-
-```bash
+python3 -m venv venv
 source venv/bin/activate
 ```
 
@@ -205,129 +131,44 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
----
+### 4. Configure Environment Variables
 
-## 🔐 Environment Variables
-
-Create a `.env` file:
+Create a `.env` file in the root directory:
 
 ```env
-PINECONE_API_KEY=your_pinecone_api_key
-PINECONE_INDEX_NAME=your_pinecone_index_name
-```
+PINECONE_API_KEY=your_pinecone_api_key_here
+PINECONE_INDEX_NAME=med-chatbot
+PINECONE_ENV=us-east-1
 
-> 🔒 Never commit your `.env` file or API keys to GitHub.
-
-Add this to `.gitignore`:
-
-```text
-.env
-venv/
-__pycache__/
+GROQ_API_KEY=your_groq_api_key_here
 ```
 
 ---
 
-## ▶️ Run Locally
+## 🚀 Running the Application
+
+Start the Streamlit application:
 
 ```bash
 streamlit run app.py
 ```
 
-The application will be available at:
-
-```text
+Open your browser and navigate to:
+```
 http://localhost:8501
 ```
 
 ---
 
-## 🎨 User Interface
+## 💡 Example Queries
 
-The application provides a modern interactive interface with:
-
-* 🌈 Gradient-based visual design
-* 💬 Chat-style conversation
-* 🩺 Medical assistant branding
-* 📚 Adjustable document retrieval
-* 💡 Quick medical question suggestions
-* 🧹 Clear conversation button
-* 📱 Responsive Streamlit layout
-* 🧠 Model and knowledge-base information cards
+* *"What is hypertension and what are its primary causes?"*
+* Follow-up: *"What are common complications associated with it?"*
+* *"What causes anemia and how is it clinically diagnosed?"*
+* *"What are common triggers for asthma and how is an acute attack managed?"*
 
 ---
 
-## 🛡️ RAG Grounding
+## ⚠️ Disclaimer
 
-The chatbot is designed to minimize hallucinations by restricting responses to the retrieved medical context.
-
-The prompt instructs the model to:
-
-* Use only retrieved medical information.
-* Avoid unsupported medical claims.
-* Avoid inventing information.
-* State when the answer is unavailable.
-* Avoid unsupported diagnosis.
-* Provide concise and understandable responses.
-
-If the retrieved documents don't contain the required information, the chatbot responds:
-
-```text
-I don't know based on the provided medical documents.
-```
-
----
-
-## ☁️ Deployment
-
-The application can be deployed on platforms that support Streamlit and Python applications.
-
-Configure the following environment variables:
-
-```text
-PINECONE_API_KEY
-PINECONE_INDEX_NAME
-```
-
-The Hugging Face model is downloaded when the application initializes.
-
-> ⚠️ **Memory requirement:** Qwen2.5-3B-Instruct is considerably larger than FLAN-T5-base, so the deployment environment should have sufficient RAM.
-
----
-
-## ⚠️ Medical Disclaimer
-
-This project is intended for **educational and research purposes only**.
-
-It is **not a medical diagnostic system** and should not be used as a replacement for a qualified healthcare professional.
-
-Always consult a licensed medical professional for diagnosis, treatment, medication, or emergency medical decisions.
-
----
-
-## 🔮 Future Improvements
-
-* 🧠 Conversation-aware RAG
-* 📌 Source/document citations
-* 📄 PDF upload and indexing
-* 🌐 Multilingual medical Q&A
-* 🎤 Voice-based interaction
-* 🔎 Advanced hybrid search
-* 📊 Retrieval confidence scores
-* ⚡ Quantized LLM inference
-* 🔐 Authentication and user management
-* 🩻 Medical document visualization
-
----
-
-## 👨‍💻 Author
-
-**Milan**
-
-Built with ❤️ using Python, LangChain, Pinecone, Hugging Face, and Streamlit.
-
----
-
-## ⭐ Support
-
-If you find this project useful, consider giving the repository a ⭐ on GitHub.
+**MedBot** is an AI assistant intended strictly for educational, informational, and research purposes. It does not provide medical diagnoses or treatment recommendations. Always seek the advice of a qualified physician or healthcare provider with any medical questions.
